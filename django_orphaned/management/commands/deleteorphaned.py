@@ -9,11 +9,16 @@ from django.conf import settings
 
 class Command(BaseCommand):
     help = "Delete all orphaned files"
-    base_options = (
-        make_option('--info', action='store_true', dest='info', default=False,
-                    help='If provided, the files will not be deleted.'),
-    )
-    option_list = BaseCommand.option_list + base_options
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument(
+            '--info', 
+            dest='info',
+            action='store_true',
+            default=False,
+            help='If provided, the files will not be deleted.')
+
 
     def handle(self, **options):
         self.only_info = options.get('info')
@@ -36,7 +41,7 @@ class Command(BaseCommand):
                         continue
                     fields = []
                     for field in mc._meta.fields:
-                        if (field.get_internal_type() == 'FileField' or field.get_internal_type() == 'ImageField'):
+                        if (field.get_internal_type() == 'FileField' or field.get_internal_type() == 'ImageField' or field.get_internal_type() == 'StdImageField'):
                             fields.append(field.name)
 
                     # we have found a model with FileFields
